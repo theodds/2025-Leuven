@@ -1,15 +1,4 @@
 
-# Late-breaking news
-
-See the recently updated details for the 2024 ISBA BioPharm Section
-Best Paper Awards at the end of this README.
-
-# Room 6A: Ensemble Learning with Bayesian Additive Regression Trees
-
-This repository contains code for reproducing some of the examples
-presented at the 2024 ISBA World Meeting BART short course.  To run
-these examples, you will likely need to install BART software.
-
 # BART R Packages
 
 The canonical reference manual for installing R packages can be found on CRAN at
@@ -19,8 +8,8 @@ already have installed.
 
 - For Windows, see this link: <https://cran.r-project.org/bin/windows/Rtools/rtools44/rtools.html>.
 - For macOS, you will need Xcode that you can get from the App Store.
-And you will need GNU Fortran that you can find here:
-<https://mac.r-project.org/tools/>.
+  You will also need GNU Fortran, which you can find here: 
+  <https://mac.r-project.org/tools/>.
 
 For the packages needed in this course, we provide useful additional tips in
 `Slides/computing.pdf` along with other BART computing advice such as
@@ -47,25 +36,14 @@ install.packages("Rcpp", dependencies=TRUE)
 install.packages("RcppArmadillo", dependencies=TRUE)
 ```
 
-For Rob's presentation, you will want the following.
-- `mBART`, the development version of the Monotonic BART package available at
-<https://github.com/remcc/mBART_shlib>.
-For example, you can install it like so.
-
-```
-library(remotes)
-install_github("remcc/mBART_shlib/mBART")
-```
-
 For Tony's presentations, you will need the following.
 
-- `Batman`, contains miscellaneous BART functions and it is available here: <https://github.com/theodds/Batman>.
-- `possum`, performs posterior summarization and it is available here:
+- `Batman:` contains miscellaneous BART functions and it is available here: <https://github.com/theodds/Batman>.
+- `possum:` performs posterior summarization and it is available here:
 <https://github.com/spencerwoody/possum>.
-- `BART4RS`, some functions for fitting the Cox proportional hazards
+- `BART4RS:` some functions for fitting the Cox proportional hazards
    model and it is available here: <https://github.com/theodds/BART4RS>.
-- `bcf`, the Bayesian Causal Forests package that has been archived by CRAN at <https://cran.r-project.org/src/contrib/Archive/bcf>.
-You can install it like so.
+- `bcf:` the Bayesian Causal Forests package, which can be installed from CRAN.
 
 ```
 library(remotes)
@@ -94,20 +72,3 @@ repository, simply do the following.
 2. Open the .Rproj file using **RStudio**.
 3. Open the notebooks in the `Examples/` directory.
 4. Knit the files if desired, or run the files interactively in **RStudio**.
-
-# 2024 ISBA BioPharm Section Best Paper Awards
-
-The ISBA BioPharm Section is now accepting submissions for the 2024
-Best Paper Award and the 2024 Junior Research Award. These awards
-recognize outstanding Bayesian statistical research conducted in the
-Biostatistics and Pharmaceutical fields.  Winners receive a cash prize
-and an invitation to present in the BioPharm webinar series.  The
-deadline for submission is July 21, 2024. For more details, please
-visit the BioParm Section online
-(<https://isba-biostatspharma.github.io/#awards>). Congratulations to
-our 2023 winners: Rodney Sparapani (Best Paper) and Noirrit Chandra
-(Junior Researcher)!
-
-Valerie Poynor, the 2024-2025 Section Chair, on behalf of the BioPharm officers
-
-
