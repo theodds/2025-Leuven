@@ -123,20 +123,28 @@ times. <- exp(seq(quantile(log(y.train), 0.025),
                   quantile(log(y.train), 0.975), length.out = K))
 summary(times.)
 
+pred <- NULL
 ## this takes a while
-## pred <- predict(post, x.test, XPtr = XPtr, events = times., K = K)
+## pred <- predict(post, x.test, XPtr = XPtr, events = times., K = K, na.rm = TRUE)
 
 j <- 1
 ## j <- 2
 ## j <- 3
 par(mfrow = c(3, 3))
 for(i in 1:9) {
+    h <- (i-1)*K+1:K
     k <- (j-1)*10+i
     plot(c(0, times.), 
          c(1, pnorm(log(times.), mu.(x.test[k, ]), sd.(x.test[k, ]), FALSE)), 
          type = 'l', ylim = 0:1, xlab = 't', ylab = 'S(t|x)')
+    if(length(pred) == 0) {
     lines(c(0, times.), c(1, pnorm(log(times.), 
-          post$f.test.mean[k], post$s.test.mean[k], FALSE)), col = 2) 
+          post$f.test.mean[k], post$s.test.mean[k], FALSE)), col = 2)
+    } else {
+        lines(c(0, times.), c(1, pred$surv.test.mean[h]), col = 2)
+        lines(c(0, times.), c(1, pred$surv.test.lower[h]), col = 4)
+        lines(c(0, times.), c(1, pred$surv.test.upper[h]), col = 4)
+    }
     abline(v = 0, h = 0:1, col = 8)
     text(3.5, 0.75, c(expression(x[1]), expression(x[2]), 
                     expression(x[3]))[j], pos = 2)
