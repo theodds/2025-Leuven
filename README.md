@@ -33,9 +33,6 @@ install.packages("RcppArmadillo", dependencies=TRUE)
 For Tony's presentations, you will need the following.
 
 - `Batman:` contains miscellaneous BART functions and it is available here: <https://github.com/theodds/Batman>.
-
-[comment]: <> (- `possum:` performs posterior summarization and it is available here: <https://github.com/spencerwoody/possum>.)
-
 - `BART4RS:` some functions for fitting the Cox proportional hazards
    model and it is available here: <https://github.com/theodds/BART4RS>.
 - `bcf:` the Bayesian Causal Forests package can be installed from CRAN like so.
