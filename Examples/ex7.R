@@ -98,7 +98,6 @@ print(c(test = Cindex(-post$f.test.mean[-(1:L)], y.test[-(1:L)]),
         train. = Cindex(-post$f.train.mean, times, delta)))
 
 ## C <- apply(-post$f.train, 1, Cindex, y.train) ## very slow
-## plot(density(C))
 
 plot(2:P, cumsum(post$f.varprob)[-1], 
      xlab = 'x', ylab = 's for mu(x)', type = 'p', 
