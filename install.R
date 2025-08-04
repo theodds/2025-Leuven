@@ -25,6 +25,7 @@ install.packages("ggdist")
 install.packages("latex2exp")
 install.packages("caret")
 install.packages("bcf")
+install.packages("LearnBayes")
 
 ## Github remote installs
 library("remotes")

@@ -49,6 +49,7 @@ For Rodney's presentations, you will need the following.
 package available in the same place.
 - `mBART:` Monotonic BART that is available at <https://github.com/remcc/mBART_shlib>.
 - `nftbart:` Nonparametric Failure Time BART that is available on CRAN.
+- `LearnBayes:` Supports many calculations such as MVN random samples on CRAN.
 
 For example, you can install BART3 like so.
 
