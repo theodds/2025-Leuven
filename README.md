@@ -10,8 +10,8 @@ Note that you will need the usual R build tools installed as well.
   GNU Fortran that you can find here: 
   <https://mac.r-project.org/tools/>.
 
-For the packages needed in this workshop, we provide additional installation tips in
-`Slides/computing.pdf` along with other BART computing advice such as multi-threading.
+For the packages needed in this workshop, we provide additional installation tips (along with other BART computing advice such as multi-threading) in
+<https://github.com/theodds/2025-Leuven/blob/master/Slides/computing.pdf>. 
 
 Below you will find a brief overview of installation instructions. But, if you
 encounter any problems, please consult the documentation and notes above. The
