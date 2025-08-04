@@ -43,12 +43,12 @@ install.packages("bcf", dependencies=TRUE)
 ```
 
 For Rodney's presentations, you will need the following.
-- `BART3`, the development version of the BART package available at
+- `BART3:` the development version of the BART package available at
 <https://github.com/rsparapa/bnptools>.
-- `hbart`, the development version of the Heteroskedastic BART
+- `hbart:` the development version of the Heteroskedastic BART
 package available in the same place.
-- `mBART`, Monotonic BART that is available at <https://github.com/remcc/mBART_shlib>.
-- `nftbart`, Nonparametric Failure Time BART that is available on CRAN.
+- `mBART:` Monotonic BART that is available at <https://github.com/remcc/mBART_shlib>.
+- `nftbart:` Nonparametric Failure Time BART that is available on CRAN.
 
 For example, you can install BART3 like so.
 
