@@ -14,8 +14,9 @@ For the packages needed in this workshop, we provide additional installation tip
 <https://github.com/theodds/2025-Leuven/blob/master/Slides/computing.pdf>. 
 
 Below you will find a brief overview of installation instructions. But, if you
-encounter any problems, please consult the documentation and notes above. The
-file `install.R` walks through installation of the individual packages.
+encounter any problems, please consult the documentation and notes above. 
+You can install many of these packages with an R script that we provide here:
+<https://github.com/theodds/2025-Leuven/blob/master/install.R>.
 
 All of the R packages can be installed from CRAN or from github.  Of course,
 there are many ways to install an R package.  Here, we provide some
