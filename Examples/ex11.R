@@ -77,6 +77,22 @@ if(file.exists(file.)) {
 
 str(trees)
 object.size(trees)
+print(object.size(trees), units = 'MB')
+
+branch <- list()
+leaf <- list()
+var <- list()
+depth <- matrix(0, nrow = 1000, ncol = 200)
+for(i in 1:127) {
+    branch[[i]] <- (trees[ , , i, 1] == 1)
+    leaf[[i]] <- (trees[ , , i, 1] == 2)
+    var[[i]] <- trees[ , , i, 2]
+    depth <- pmax(depth, floor(log2(leaf[[i]]*i)))
+}
+str(depth)
+table(depth)/200000
+
+table(var[[1]][var[[1]]>0])/sum(var[[1]][var[[1]]>0])
 
 x4 <- list()
 x5 <- list()
