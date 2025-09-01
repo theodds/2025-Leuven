@@ -25,12 +25,13 @@ install.packages("ggdist")
 install.packages("latex2exp")
 install.packages("caret")
 install.packages("bcf")
+install.packages("LearnBayes")
 
 ## Github remote installs
 library("remotes")
 install_github("remcc/mBART_shlib/mBART")
 install_github("rsparapa/bnptools/BART3")
 install_github("theodds/Batman")
-install_github("spencerwoody/possum")
 install_github("theodds/BART4RS")
+##install_github("spencerwoody/possum") ## not needed
 

@@ -10,12 +10,13 @@ Note that you will need the usual R build tools installed as well.
   GNU Fortran that you can find here: 
   <https://mac.r-project.org/tools/>.
 
-For the packages needed in this workshop, we provide additional installation tips in
-`Slides/computing.pdf` along with other BART computing advice such as multi-threading.
+For the packages needed in this workshop, we provide additional installation tips (along with other BART computing advice such as multi-threading) in
+<https://github.com/theodds/2025-Leuven/blob/master/Slides/computing.pdf>. 
 
 Below you will find a brief overview of installation instructions. But, if you
-encounter any problems, please consult the documentation and notes above. The
-file `install.R` walks through installation of the individual packages.
+encounter any problems, please consult the documentation and notes above. 
+You can install many of these packages with an R script that we provide here:
+<https://github.com/theodds/2025-Leuven/blob/master/install.R>.
 
 All of the R packages can be installed from CRAN or from github.  Of course,
 there are many ways to install an R package.  Here, we provide some
@@ -33,8 +34,6 @@ install.packages("RcppArmadillo", dependencies=TRUE)
 For Tony's presentations, you will need the following.
 
 - `Batman:` contains miscellaneous BART functions and it is available here: <https://github.com/theodds/Batman>.
-- `possum:` performs posterior summarization and it is available here:
-<https://github.com/spencerwoody/possum>.
 - `BART4RS:` some functions for fitting the Cox proportional hazards
    model and it is available here: <https://github.com/theodds/BART4RS>.
 - `bcf:` the Bayesian Causal Forests package can be installed from CRAN like so.
@@ -44,12 +43,13 @@ install.packages("bcf", dependencies=TRUE)
 ```
 
 For Rodney's presentations, you will need the following.
-- `BART3`, the development version of the BART package available at
+- `BART3:` the development version of the BART package available at
 <https://github.com/rsparapa/bnptools>.
-- `hbart`, the development version of the Heteroskedastic BART
+- `hbart:` the development version of the Heteroskedastic BART
 package available in the same place.
-- `mBART`, Monotonic BART that is available at <https://github.com/remcc/mBART_shlib>.
-- `nftbart`, Nonparametric Failure Time BART that is available on CRAN.
+- `mBART:` Monotonic BART that is available at <https://github.com/remcc/mBART_shlib>.
+- `nftbart:` Nonparametric Failure Time BART that is available on CRAN.
+- `LearnBayes:` Supports many calculations such as MVN random samples on CRAN.
 
 For example, you can install BART3 like so.
 
