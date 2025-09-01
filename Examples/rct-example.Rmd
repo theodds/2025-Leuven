@@ -1,0 +1,272 @@
+---
+title: "Subgroup Detection and Policy Estimation Example"
+---
+
+## Introduction
+
+This vignette is a modified version of a vignette by Drew Herren and Jared Murray, [available here](https://github.com/jaredsmurray/ICHPS2025). They re-analyze data from study 6 in ["A synergistic mindsets intervention protects adolescents from stress (\@yeager2022synergistic)"](https://www.nature.com/articles/s41586-022-04907-7). The study was a randomized controlled trial of a light-touch synergistic mindsets intervention. Variables include:
+
+-   `testanxiety`: A measure of the student's test anxiety
+-   `sex`: 1 if M, 0 if F
+-   `stressmindset_baseline`: Pre-treatment stress mindset; lower values indicate positive stress-can-be-enhancing mindsets
+-   `fixedmindset_baseline`: Pre-treatment growth/fixed mindset; lower values indicate positive growth mindsets
+-   `pss_impute`: A measure of perceived social stress at baseline
+-   `fgen_moth`: 1 if the student is a first-generation college student on their mother's side
+-   `fgen_fath`: 1 if the student is a first-generation college student on their father's side
+-   `ses`: A measure of socioeconomic status
+
+The outcome `anxiety` is a measure of anxiety (GAD-7).
+
+First, we will load requisite packages and import the data:
+
+```{r results = 'hide', message = FALSE, warning = FALSE}
+load_packages <- function() {
+  library(stochtree)
+  library(ggplot2)
+  library(coda)
+  library(possum)
+  library(rpart)
+  library(rpart.plot)
+  library(tidyverse)
+  library(here)
+  library(policytree)
+  
+  # Import dataset
+  file_path <- file.path(here(), "Data/synergistic_study6.csv")
+  df <- read.csv(file_path)
+  
+  return(df)
+}
+
+mindsets <- load_packages()
+```
+
+We also create two new variables from the baseline fixed and stress mindset scores (where higher scores correspond to more fixed mindsets and less stress-can-be-enhancing mindsets) by adding and multiplying them. Since the hypothesis was that the treatment would be most effective for students with poor growth and stress mindsets, adding these coordinates will allow the trees to make one split to isolate groups that are high or low on both mindset scores. Feature engineering like this can be very helpful when using tree-based methods in general, especially when the sample size is small.
+
+```{r}
+transform_covariates <- function(df) {
+  y <- df$anxiety
+  Z <- df$treatment
+  
+  covariate_df <- dplyr::select(df, -treatment, -anxiety) %>% 
+    mutate(bothplus = stressmindset_baseline + fixedmindset_baseline,
+         bothprod = scale(stressmindset_baseline)*scale(fixedmindset_baseline)) %>%
+  data.frame()
+  
+  return(list(y = y, Z = Z, covariate_df = covariate_df))
+}
+
+mindsets_list <- transform_covariates(mindsets)
+```
+
+## Fitting a BCF
+
+We first fit the BCF model:
+
+$$
+  y_i = \mu(x_i) + \tau(x_i)z_i + \epsilon_i,\ \ \epsilon_i\sim N(0,\sigma^2)
+$$
+
+```{r}
+fit_bcf <- function(mindsets_list, seed) {
+  set.seed(seed)
+  hypers <- make_hypers(seed)
+  opts <- make_opts()
+  
+  bcf_model <- bcf(X_train = mindsets_list$covariate_df,
+                   Z_train = mindsets_list$Z,
+                   y_train = mindsets_list$y,
+                   num_gfr = opts$num_gfr,
+                   num_burnin = opts$num_burnin,
+                   num_mcmc = opts$num_mcmc,
+                   general_params = hypers$general_params,
+                   treatment_effect_forest_params = hypers$trt_params,
+                   )
+  
+  ## Computing Some Other Quantities
+  bcf_model$standardized_cate <- bcf_model$tau_hat_train / sd(mindsets_list$y)
+  bcf_model$standardized_cate_hat <- rowMeans(bcf_model$standardized_cate)
+  bcf_model$ate_samples <- colMeans(bcf_model$tau_hat_train)
+  return(bcf_model)
+}
+
+## A couple of helper functions to make the model fitting more understandable
+make_hypers <- function(seed) {
+  general_params <- list(
+    propensity_covariate = 'none', 
+    cutpoint_grid_size = 1000, 
+    sample_sigma_leaf_tau = T, 
+    sample_sigma_leaf_mu = T, 
+    adaptive_coding = F, 
+    control_coding_init = 0,
+    treated_coding_init = 1,
+    random_seed = seed
+  )
+  
+  treatment_effect_forest_params = list(
+    alpha = 0.95
+  )
+  
+  return(list(general_params = general_params,
+              trt_params = treatment_effect_forest_params))
+}
+
+make_opts <- function() {
+  list(num_gfr = 100, num_burnin = 100, num_mcmc = 1000)
+}
+
+
+## Fit the model
+fitted_bcf <- fit_bcf(mindsets_list, 123)
+```
+
+## Analysis
+
+First some high-level diagnostics using `coda`:
+
+```{r}
+coda_stats <- function(fit) {
+  coda_s2 = mcmc(fit$sigma2_samples)
+  print(summary(coda_s2))
+  plot(coda_s2)
+  plot(acfplot(coda_s2))
+  print(effectiveSize(coda_s2))
+}
+
+coda_stats(fitted_bcf)
+```
+
+### Predictive accuracy
+
+Compare the average predicted outcome from the BCF model versus actual y, for a sanity check.
+
+```{r}
+plot(x = rowMeans(fitted_bcf$y_hat_train), 
+     y = mindsets_list$y, 
+     xlab = "Predicted",
+     ylab = "Actual", 
+     main = "Outcome")
+
+abline(0,1,col="red",lty=3,lwd=3)
+```
+
+
+### Estimated conditional average treatment effects (CATEs)
+
+`fitted_bcf$tau_hat_train` contains posterior samples of CATEs for each observation. Typically these are very uncertain, and inference will focus on aggregations or summaries of CATEs.
+
+```{r}
+hist(fitted_bcf$standardized_cate_hat, breaks = 100)
+boxplot(t(fitted_bcf$standardized_cate)[,order(fitted_bcf$standardized_cate_hat)])
+abline(h=0, lty=2, col='red')
+```
+
+### Risk-Neutral Subgroups
+
+We can approximately get the optimal risk-neutral subgroups using the `rpart` and `rpart.plot` functions:
+
+```{r}
+treefit = rpart(tau_hat ~., 
+                data = mindsets_list$covariate_df %>% 
+                  mutate(tau_hat = fitted_bcf$standardized_cate_hat),
+                control=rpart.control(maxdepth=2))
+
+rpart.plot(treefit)
+```
+
+Next, we look at the posterior comparing teh different subgroups:
+
+```{r}
+ate_subgroups <- function() {
+  df <- mindsets_list$covariate_df
+  lowses_negmindset <- df$fgen_moth == 1 & df$bothplus > 8.2
+  subgroup_ates <- subgroup_average_posterior(t(fitted_bcf$tau_hat_train), 
+                                              lowses_negmindset)
+  ggplot(aes(x = value, color = lowses_negmindset),
+         data = gather(subgroup_ates, key="lowses_negmindset")) +
+    geom_density()
+}
+
+ate_subgroups()
+```
+
+
+Deeper trees better approximate $\tau$ at the cost of complexity and a loss of interpretability.
+
+```{r}
+treefit_deeper = rpart(tau_hat ~., 
+                data = mindsets_list$covariate_df %>% 
+                  mutate(tau_hat = fitted_bcf$standardized_cate_hat),
+                control=rpart.control(maxdepth = 3))
+
+rpart.plot(treefit_deeper)
+```
+
+## The Probably-Effective Subgroup
+
+As a point of comparison, we will also consider subgroups where the treatment is *probably effective* and see how these compare with the results of the subgroup analysis. Specifically, we will choose a policy to maximize the utility
+
+$$
+  \text{Utility} = \sum_{i = 1}^N V(X_i) \, (\text{Effective}_i -  0.7)
+$$
+
+where $V(x) \in \{0,1\}$ assigns individuals to either treatment or control, and $\text{Effective}_i$ is the indicator of a negative treatment effect (i.e., the treatment reduces stress). An optimal policy can be obtained using the `policytree` package as follows:
+
+```{r}
+get_policytree <- function(mindsets_list, bcf_fit, cutoff, method = "pval", sgn = 1, depth = 2) {
+  stopifnot(method %in% c("pval", "size"))
+  
+  ## Get design matrix and posterior probability of efficacy
+  X <- as.matrix(mindsets_list$covariate_df)
+  p_pos <- rowMeans(bcf_fit$tau_hat_train < 0)
+  if(method == "size") p_pos <- sgn * rowMeans(bcf_fit$tau_hat_train)
+  
+  ## Get policy
+  pt <- policy_tree(X = X, Gamma = cbind(0, p_pos - cutoff), depth = depth)
+  
+  ## Get treatment effects for treated and untreated groups
+  assignment <- predict(pt, newdata = X)
+  tau_treated <- colMeans(bcf_fit$standardized_cate[assignment == 2,])
+  tau_untreated <- colMeans(bcf_fit$standardized_cate[assignment == 1,])
+  
+  ## Data frame for making plots for treatments
+  out <- data.frame(iter = rep(1:length(tau_treated), 2),
+                    trt = rep(c(1, 0), each = length(tau_treated)),
+                    tau = c(tau_treated, tau_untreated))
+  
+  return(list(df = out, 
+              tree = pt, 
+              assignment = assignment,
+              p_pos = p_pos, 
+              p_treated_pos = mean(tau_treated < 0)))
+}
+
+pt_list <- get_policytree(mindsets_list, fitted_bcf, cutoff = 0.7)
+ggplot(pt_list$df, aes(x = tau, color = factor(trt))) + 
+  stat_ecdf() + 
+  theme_bw() + 
+  geom_vline(xintercept = 0, linetype = 2) + 
+  geom_hline(yintercept = 0.95, linetype = 2)
+
+plot(pt_list$tree)
+```
+
+```{r}
+ggplot() + 
+  geom_density(aes(x = tau, color = factor(trt)), data = pt_list$df)
+
+ate_subgroups()
+```
+
+Alternatively, we can go the route of empirical welfare maximization as follows. The following uses a cutoff of reducing stress by at least $2$ units on average (`sgn` here denotes that we want to *decrease* stress):
+
+```{r}
+pt_erf <- get_policytree(mindsets_list, fitted_bcf, cutoff = 2, method = "size", sgn = -1)
+ggplot(pt_erf$df, aes(x = tau, color = factor(trt))) + 
+  stat_ecdf() + 
+  theme_bw() + 
+  geom_vline(xintercept = 0, linetype = 2) + 
+  geom_hline(yintercept = 0.95, linetype = 2)
+
+plot(pt_erf$tree)
+```
