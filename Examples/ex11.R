@@ -92,27 +92,36 @@ for(i in 1:127) {
 str(depth)
 table(depth)/200000
 
-table(var[[1]][var[[1]]>0])/sum(var[[1]][var[[1]]>0])
+a <- table(var[[1]][var[[1]]>0])/sum(var[[1]]>0)
+print(a)
+print(cumsum(a))
+plot(a, ylim = 0:1, xlab = 'x', ylab = 'node:1')
+points(cumsum(a), col = 4)
+abline(h = 0:1, v = 5.5, col = 8)
+abline(h = 0.05, col = 2)
 
-x4 <- list()
-x5 <- list()
-for(i in 1:3) {
-    x4[[i]] <- (trees[ , , i, 2] == 4)
-    x5[[i]] <- (trees[ , , i, 2] == 5)
-}
+x4.b <- (trees[ , , 1, 2] == 4) ## root branch on x4
+x4.b[!branch[[1]]] <- NA
+x4.c <- ## node 2 or 3 children branch on x4
+    (trees[ , , 2, 2] == 4) | (trees[ , , 3, 2] == 4) 
+x4.c[!(branch[[2]] | branch[[3]])] <- NA
+x5.b <- (trees[ , , 1, 2] == 5) ## root branch on x5
+x5.b[!branch[[1]]] <- NA
+x5.c <- ## node 2 or 3 children branch on x5
+    (trees[ , , 2, 2] == 5) | (trees[ , , 3, 2] == 5)
+x5.c[!(branch[[2]] | branch[[3]])] <- NA
+x45  <- (x4.b & x5.c) | (x4.c & x5.b)
+## interaction potential
+addmargins(table(x45[(x4.b | x5.b) & (branch[[2]] | branch[[3]])]))
 
-table(x4[[1]])/200000
-table(x5[[2]][x4[[1]]] | x5[[3]][x4[[1]]])/sum(x4[[1]])
-table(x5[[1]])/200000
-table(x4[[2]][x5[[1]]] | x4[[3]][x5[[1]]])/sum(x5[[1]])
-
-x1 <- list()
-x2 <- list()
-for(i in 1:3) {
-    x1[[i]] <- (trees[ , , i, 2] == 1)
-    x2[[i]] <- (trees[ , , i, 2] == 2)
-}
-
-table(x2[[2]][x1[[1]]] | x2[[3]][x1[[1]]])/sum(x1[[1]])
-table(x1[[2]][x2[[1]]] | x1[[3]][x2[[1]]])/sum(x5[[1]])
+x1.b <- (trees[ , , 1, 2] == 1) ## root branch on x1
+x1.b[!branch[[1]]] <- NA
+x1.c <- (trees[ , , 2, 2] == 1) | (trees[ , , 3, 2] == 1) 
+x1.c[!(branch[[2]] | branch[[3]])] <- NA
+x2.b <- (trees[ , , 1, 2] == 2) ## root branch on x2
+x2.b[!branch[[1]]] <- NA
+x2.c <- (trees[ , , 2, 2] == 2) | (trees[ , , 3, 2] == 2)
+x2.c[!(branch[[2]] | branch[[3]])] <- NA
+x12  <- (x1.b & x2.c) | (x1.c & x2.b)
+addmargins(table(x12[(x1.b | x2.b) & (branch[[2]] | branch[[3]])]))
 
