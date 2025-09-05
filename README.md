@@ -60,7 +60,7 @@ install_github("rsparapa/bnptools/BART3")
 
 # **RStudio** Replication Materials
 
-All replication materials are in the `Examples/` directory. To use this
+**RStudio** replication materials are in the `Examples/` directory. To use this
 repository, simply do the following.
 
 1. Clone the repository.
