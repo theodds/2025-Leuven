@@ -64,6 +64,6 @@ install_github("rsparapa/bnptools/BART3")
 repository, simply do the following.
 
 1. Clone the repository.
-2. Open the .Rproj file using **RStudio**.
-3. Open the notebooks in the `Examples/` directory.
-4. Knit the files if desired, or run the files interactively in **RStudio**.
+2. Open the `.Rproj` file using **RStudio**.
+3. Open the `.Rmd` notebooks in the `Examples/` directory.
+4. Then you can `knit` or run the notebooks interactively with **RStudio**.
