@@ -119,9 +119,18 @@ IP <- function(A, B, trees) { ## interaction potential
                 branch = branch))
 }
 
-x12 <- IP(1, 2, trees)
-addmargins(table(x12$AB[(x12$A.root | x12$B.root) & (x12$branch[[2]] | x12$branch[[3]])]))
+## x12 <- IP(1, 2, trees)
+## addmargins(table(x12$AB[(x12$A.root | x12$B.root) & (x12$branch[[2]] | x12$branch[[3]])]))
+## x45 <- IP(4, 5, trees)
+## addmargins(table(x45$AB[(x45$A.root | x45$B.root) & (x45$branch[[2]] | x45$branch[[3]])]))
 
-x45 <- IP(4, 5, trees)
-addmargins(table(x45$AB[(x45$A.root | x45$B.root) & (x45$branch[[2]] | x45$branch[[3]])]))
+inter <- matrix(nrow = 6, ncol = 6)
 
+for(i in 1:5)
+    for(j in (i+1):6) {
+        XX <- IP(i, j, trees)
+        inter[i, j] <- sum(XX$AB[(XX$A.root | XX$B.root) & (XX$branch[[2]] | XX$branch[[3]])])
+        inter[j, i] <- inter[i, j]+sum(!XX$AB[(XX$A.root | XX$B.root) & (XX$branch[[2]] | XX$branch[[3]])])
+}
+
+print(inter)
