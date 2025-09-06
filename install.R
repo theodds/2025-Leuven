@@ -28,11 +28,11 @@ install.packages("bcf")
 install.packages("nftbart")
 install.packages("LearnBayes")
 
-## Github remote installs
+## Install GitHub packages
+
 library("remotes")
 install_github("remcc/mBART_shlib/mBART")
 install_github("rsparapa/bnptools/BART3")
 install_github("theodds/Batman")
 install_github("theodds/BART4RS")
-##install_github("spencerwoody/possum") ## not needed
 
