@@ -3,17 +3,18 @@ ex2	    Simulated data for dichotomous outcome
 ex3	    Simulated data for categorical outcome	    
 ex4	    Simulated data for monotonic outcome	    
 ex5	    Simulated data for heteroskedastic outcome	    
-ex6	    Simulated data for time-to-event outcome: discrete time approach
-ex7	    Simulated data for time-to-event outcome: Nonparametric failure time
+ex6	    Simulated data for time-to-event outcome: discrete time
+ex7	    Simulated data for time-to-event outcome: NFT
 ex8	    Simulated data for missing data example
 ex9	    Simulated data for missing data example
 ex10	    Simulated data for missing data example
 ex11	    Simulated data for interaction detection
-growth0	    Growth chart example for convergence diagnostics
-growth1	    Growth chart example for FPD
-growth2	    Growth chart example for FPD vs. FPDK
-growth3	    Growth chart example for FPD vs. SHAP
+liver.crisk.bart      Competing risks liver transplant example
+liver.crisk2.bart      Competing risks liver transplant example
+liver.crisk3.bart      Competing risks liver transplant example
+lung          	       Advanced lung cancer example: NFT
+lung.surv.bart	       Advanced lung cancer example: discrete time
 nci-topo    DART example with the NCItopo data
 nci-tsvs    TSVS example with the NCItopo data
 nox	    Boston air pollution: Nitrogen Oxides and Housing Values
-nox2	    Boston air pollution: informative prior for BART
+TSVSlung          	Advanced lung cancer example: TSVS
