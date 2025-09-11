@@ -29,7 +29,7 @@ y.test  <- rnorm(Q, mu.(x.test), sd.)
 summary(y.train)
 summary(y.test[-(1:L)])
 
-options(mc.cores = 8)
+if(mc.cores.openmp()>0) options(mc.cores = 8)
 file. <- "ex1.rds"
 if(file.exists(file.)) {
     post <- readRDS(file.)
@@ -75,3 +75,24 @@ for(i in 1:3) {
     points(x.test[j[9:10], i], pred[[i]]$yhat.test.mean[9:10], col=h)
 }
  
+levels. <- quantile(-outer(x[-10], x[-10]), (1:4)/5)
+contour(x, x, -outer(x, x), levels = levels.)
+abline(v = 1, h = 1, col = 8)
+X <- matrix(nrow = 100, ncol = 2)
+k <- 1
+for(i in 1:10)
+    for(j in 1:10) {
+        X[k, 1] <- x[i]
+        X[k, 2] <- x[j]
+        k <- k+1
+}
+z <- FPD(post, X, 4:5)
+
+Z <- matrix(nrow = 10, ncol = 10)
+k <- 1
+for(i in 1:10)
+    for(j in 1:10) {
+        Z[i, j] <- z$yhat.test.mean[k] ## x4:i, x5:j
+        k <- k+1
+}
+contour(x, x, Z, add = TRUE, col = 2, levels = levels.)
