@@ -9,6 +9,7 @@ ex8	    Simulated data for missing data example
 ex9	    Simulated data for missing data example
 ex10	    Simulated data for missing data example
 ex11	    Simulated data for interaction detection
+ex12	    Simulated data for marginal effects
 liver.crisk.bart      Competing risks liver transplant example
 liver.crisk2.bart      Competing risks liver transplant example
 liver.crisk3.bart      Competing risks liver transplant example
