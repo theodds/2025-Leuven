@@ -11,6 +11,8 @@ if(FALSE) {
 
 ## Install CRAN packages
 
+options(repos=c(CRAN="https://ftp.belnet.be/mirror/CRAN"))
+install.packages("remotes", dependencies=TRUE)
 install.packages("tidyverse")
 install.packages("devtools")
 install.packages("RcppArmadillo")
@@ -25,9 +27,11 @@ install.packages("ggdist")
 install.packages("latex2exp")
 install.packages("caret")
 install.packages("bcf")
+install.packages("nftbart")
 install.packages("LearnBayes")
 
-## Github remote installs
+## Install GitHub packages
+
 library("remotes")
 install_github("remcc/mBART_shlib/mBART")
 install_github("rsparapa/bnptools/BART3")

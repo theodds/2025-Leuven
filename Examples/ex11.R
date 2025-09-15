@@ -92,27 +92,45 @@ for(i in 1:127) {
 str(depth)
 table(depth)/200000
 
-table(var[[1]][var[[1]]>0])/sum(var[[1]][var[[1]]>0])
+a <- table(var[[1]][var[[1]]>0])/sum(var[[1]]>0)
+print(a)
+print(cumsum(a))
+plot(a, ylim = 0:1, xlab = 'x', ylab = 'node:1')
+points(cumsum(a), col = 4)
+abline(h = 0:1, v = 5.5, col = 8)
+abline(h = 0.05, col = 2)
 
-x4 <- list()
-x5 <- list()
-for(i in 1:3) {
-    x4[[i]] <- (trees[ , , i, 2] == 4)
-    x5[[i]] <- (trees[ , , i, 2] == 5)
+IP <- function(A, B, trees) { ## interaction potential
+    branch <- list()
+    for(i in 1:3) branch[[i]] <- (trees[ , , i, 1] == 1)
+    xA.b <- (trees[ , , 1, 2] == A) ## root branch on xA
+    xA.b[!branch[[1]]] <- NA
+    xA.c <- ## node 2 or 3 children branch on xA
+        (trees[ , , 2, 2] == A) | (trees[ , , 3, 2] == A) 
+    xA.c[!(branch[[2]] | branch[[3]])] <- NA
+    xB.b <- (trees[ , , 1, 2] == B) ## root branch on xB
+    xB.b[!branch[[1]]] <- NA
+    xB.c <- ## node 2 or 3 children branch on xB
+        (trees[ , , 2, 2] == B) | (trees[ , , 3, 2] == B)
+    xB.c[!(branch[[2]] | branch[[3]])] <- NA
+    xAB <- (xA.b & xB.c) | (xA.c & xB.b)
+    return(list(AB = xAB, A.root = xA.b, B.root = xB.b, 
+                A.child = xA.c, B.child = xB.c,
+                branch = branch))
 }
 
-table(x4[[1]])/200000
-table(x5[[2]][x4[[1]]] | x5[[3]][x4[[1]]])/sum(x4[[1]])
-table(x5[[1]])/200000
-table(x4[[2]][x5[[1]]] | x4[[3]][x5[[1]]])/sum(x5[[1]])
+## x12 <- IP(1, 2, trees)
+## addmargins(table(x12$AB[(x12$A.root | x12$B.root) & (x12$branch[[2]] | x12$branch[[3]])]))
+## x45 <- IP(4, 5, trees)
+## addmargins(table(x45$AB[(x45$A.root | x45$B.root) & (x45$branch[[2]] | x45$branch[[3]])]))
 
-x1 <- list()
-x2 <- list()
-for(i in 1:3) {
-    x1[[i]] <- (trees[ , , i, 2] == 1)
-    x2[[i]] <- (trees[ , , i, 2] == 2)
+inter <- matrix(nrow = 6, ncol = 6)
+
+for(i in 1:5)
+    for(j in (i+1):6) {
+        XX <- IP(i, j, trees)
+        inter[i, j] <- sum(XX$AB[(XX$A.root | XX$B.root) & (XX$branch[[2]] | XX$branch[[3]])])
+        inter[j, i] <- inter[i, j]+sum(!XX$AB[(XX$A.root | XX$B.root) & (XX$branch[[2]] | XX$branch[[3]])])
 }
 
-table(x2[[2]][x1[[1]]] | x2[[3]][x1[[1]]])/sum(x1[[1]])
-table(x1[[2]][x2[[1]]] | x1[[3]][x2[[1]]])/sum(x5[[1]])
-
+print(inter)
