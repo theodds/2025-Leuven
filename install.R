@@ -4,13 +4,15 @@ if(FALSE) {
   # Create a new, empty directory for our test library
   test_lib <- file.path(tempdir(), "test_lib")
   dir.create(test_lib, showWarnings = FALSE)
-  
+
   # Set the new directory as our library path
-  .libPaths(test_lib)  
+  .libPaths(test_lib)
 }
 
 ## Install CRAN packages
 
+options(repos=c(CRAN="https://ftp.belnet.be/mirror/CRAN"))
+install.packages("remotes", dependencies=TRUE)
 install.packages("tidyverse")
 install.packages("devtools")
 install.packages("RcppArmadillo")
