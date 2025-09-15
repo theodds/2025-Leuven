@@ -4,9 +4,9 @@ if(FALSE) {
   # Create a new, empty directory for our test library
   test_lib <- file.path(tempdir(), "test_lib")
   dir.create(test_lib, showWarnings = FALSE)
-  
+
   # Set the new directory as our library path
-  .libPaths(test_lib)  
+  .libPaths(test_lib)
 }
 
 ## Install CRAN packages
@@ -33,5 +33,5 @@ install_github("remcc/mBART_shlib/mBART")
 install_github("rsparapa/bnptools/BART3")
 install_github("theodds/Batman")
 install_github("theodds/BART4RS")
-##install_github("spencerwoody/possum") ## not needed
+install_github("spencerwoody/possum") ## not needed
 
