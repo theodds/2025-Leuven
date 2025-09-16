@@ -5,8 +5,7 @@ bibliography: references.bib
 
 # Dataset
 
-In this notebook we analyze the *crabs dataset*, which is an example in the
-textbook *Categorical Data Analysis* by Agresti. We first load the data:
+In this notebook we analyze the *crabs dataset*, which is an example in the textbook *Categorical Data Analysis* by Agresti. We first load the data:
 
 ```{r}
 library(tidyverse)
@@ -18,31 +17,19 @@ library(patchwork)
 crabs <- read_csv("https://raw.githubusercontent.com/theodds/SDS-348/master/crabs.csv")
 ```
 
-Next, we use the `QNBBart` function to fit the model. Because `QNBBart` does not
-have a "nice" interface yet, we have to preprocess some of the data ourselves.
-The `QNBBart` function takes the following arguments:
+Next, we use the `QNBBart` function to fit the model. Because `QNBBart` does not have a "nice" interface yet, we have to preprocess some of the data ourselves. The `QNBBart` function takes the following arguments:
 
-- `X`: the design matrix for the training data.
-- `Y`: the count outcome.
-- `X_test`: the design matrix for the test data.
-- `probs`: a sparse matrix defining the probabilities of creating decision rules
-  for each of the predictors; basically, this will tell `QNBBart` that the
-  categorical variables in the design matrix are associated to the same variable
-  (e.g., color consists of several discrete levels, and the design matrix
-  creates dummy variables for each level that need to be associated to each
-  other).
-- `num_trees`: the number of trees in the ensemble.
-- `scale_lambda`: the leaf node scale parameter, called $\sigma_\mu$ in the
-  slides.
-- `scale_lambda_0`: the prior scale for the offset (see the slides).
-- `update_s`: whether to do automatic relevance determination or not.
-- `num_burn`, `num_thin`, and `num_save`: number of iterations to run for the
-  chain, including the warmup phase, thinning interval, and number of
-  observations to save.
+-   `X`: the design matrix for the training data.
+-   `Y`: the count outcome.
+-   `X_test`: the design matrix for the test data.
+-   `probs`: a sparse matrix defining the probabilities of creating decision rules for each of the predictors; basically, this will tell `QNBBart` that the categorical variables in the design matrix are associated to the same variable (e.g., color consists of several discrete levels, and the design matrix creates dummy variables for each level that need to be associated to each other).
+-   `num_trees`: the number of trees in the ensemble.
+-   `scale_lambda`: the leaf node scale parameter, called $\sigma_\mu$ in the slides.
+-   `scale_lambda_0`: the prior scale for the offset (see the slides).
+-   `update_s`: whether to do automatic relevance determination or not.
+-   `num_burn`, `num_thin`, and `num_save`: number of iterations to run for the chain, including the warmup phase, thinning interval, and number of observations to save.
 
-Because we will want to look at the impact of `color` (averaged over the
-observational units), we take our test set to consist of four copies of the
-training data, but with the color variable changed from dark to light.
+Because we will want to look at the impact of `color` (averaged over the observational units), we take our test set to consist of four copies of the training data, but with the color variable changed from dark to light.
 
 ```{r}
 formula_crab <- satell ~ color + spine + width + weight - 1
@@ -65,9 +52,7 @@ probs[8,3] <- 1
 probs[9,4] <- 1
 ```
 
-An important step from the above code is normalizing all of the covariates to
-lie between 0 and 1; **this is necessary for the BART model to work for this
-function!** Next we fit the model:
+An important step from the above code is normalizing all of the covariates to lie between 0 and 1; **this is necessary for the BART model to work for this function!** Next we fit the model:
 
 ```{r}
 set.seed(1234)
@@ -83,8 +68,7 @@ fitted_crabs <- QNBBart(
 
 ## The Posterior of k
 
-The dispersion parameter $k$ can be used to determine if the Poisson model is
-a good approximation:
+The dispersion parameter $k$ can be used to determine if the Poisson model is a good approximation:
 
 ```{r}
 params <- data.frame(k = fitted_crabs$k)
@@ -93,8 +77,7 @@ ggplot(params, aes(x = k)) + geom_histogram(color = 'white') + theme_bw() +
   ggtitle("Posterior of Overdispersion Parameter")
 ```
 
-The posterior concentrates around $k = 1$, which corresponds to a Geometric,
-rather than Poisson, model.
+The posterior concentrates around $k = 1$, which corresponds to a Geometric, rather than Poisson, model.
 
 ## Variable Counts
 
@@ -105,17 +88,11 @@ barplot(colMeans(fitted_crabs$counts),
         names.arg = c("Color", "Spine", "Width", "Weight"))
 ```
 
-There is not much difference in the variable importances according to the number
-of splits used for each variable (this is somewhat typical, and also why I tend
-not to like looking at the number of splits as a measure of variable
-importance).
+There is not much difference in the variable importances according to the number of splits used for each variable (this is somewhat typical, and also why I tend not to like looking at the number of splits as a measure of variable importance).
 
 ## Assessing the Importance of Size
 
-We use the `possum` package to gain insight into the importance of the
-individual variables, with the `additive_summary` and `additive_summary_plot`
-functions. We will focus on just the "size" variables (weight and width), as
-they are correlated with each other.
+We use the `possum` package to gain insight into the importance of the individual variables, with the `additive_summary` and `additive_summary_plot` functions. We will focus on just the "size" variables (weight and width), as they are correlated with each other.
 
 ```{r}
 crabs2 <- crabs %>% mutate(color = as.factor(color), spine = as.factor(spine),
@@ -149,19 +126,11 @@ q_1 / (q_2 + q_3) / q_4
 
 ```
 
-The top row displays the GAM projections for the model with both width and
-weight in the model, while the second row shows the GAM projections including
-only width (left) and only weight (right). Practically speaking, you can
-probably get away with not including both of these variables, but we see that
-*at least one* of the variables are required. The Summary $R^2$ is given in the
-bottom plot, and shows that excluding both variables greatly decreases the
-quality of the model.
+The top row displays the GAM projections for the model with both width and weight in the model, while the second row shows the GAM projections including only width (left) and only weight (right). Practically speaking, you can probably get away with not including both of these variables, but we see that *at least one* of the variables are required. The Summary $R^2$ is given in the bottom plot, and shows that excluding both variables greatly decreases the quality of the model.
 
 ## The Importance of Color
 
-Lastly, we assess the importance of color. To do this, we look at the mean
-effect, across all observations, of changing the color to a given level $c$,
-relative to the overall average. Specifically, we define
+Lastly, we assess the importance of color. To do this, we look at the mean effect, across all observations, of changing the color to a given level $c$, relative to the overall average. Specifically, we define
 
 $$
   c_k = \frac{1}{N} \sum_i r(X_i; \text{color} = k)
@@ -198,5 +167,4 @@ ggplot(color_long, aes(x = color, y = average)) + geom_boxplot() + theme_bw()
 
 ```
 
-For the most part, color does not seem to have a large impact on the
-predictions.
+For the most part, color does not seem to have a large impact on the predictions.
