@@ -36,13 +36,13 @@ if(file.exists(file.)) {
     options(mc.cores = 8)
     post <- mc.gbart(x.train, y.train, x.test, sparse = TRUE, seed = 21)
     saveRDS(post, file.)
-    plot(post$sigma[ , 1], type = 'l', ylim = c(0, max(post$sigma)), 
+    plot(post$sigma[ , 1], type = 'l', ylim = c(0, max(post$sigma)),
          ylab = expression(sigma))
     for(i in 2:8) lines(post$sigma[ , i], col = i)
     abline(v = 100, h = c(0, sd.), col = 8)
     abline(h = post$sigma.mean, lty = 2)
     check <- maxRhat(post$sigma., post$chains)
-    acf(post$sigma., main = expression(sigma)) 
+    acf(post$sigma., main = expression(sigma))
     points(check$rho)
     ## plot(post$accept[ , i], type = 'l', ylim = 0:1, ylab = 'MH')
     ## for(i in 2:8) lines(post$accept[ , i], col = i)
@@ -51,9 +51,9 @@ if(file.exists(file.)) {
     set.seed(12)
     post <- gbart(x.train, y.train, x.test, sparse = TRUE)
     saveRDS(post, file.)
-    acf(post$sigma., main = expression(sigma)) 
+    acf(post$sigma., main = expression(sigma))
 }
-   
+
 
 levels. <- quantile(-outer(x[-10], x[-10]), (1:4)/5)
 contour(x, x, -outer(x, x), levels = levels.)
@@ -83,7 +83,7 @@ branch <- list()
 leaf <- list()
 var <- list()
 depth <- matrix(0, nrow = 1000, ncol = 200)
-for(i in 1:127) {
+for(i in 1:dim(trees)[3]) {
     branch[[i]] <- (trees[ , , i, 1] == 1)
     leaf[[i]] <- (trees[ , , i, 1] == 2)
     var[[i]] <- trees[ , , i, 2]
@@ -106,7 +106,7 @@ IP <- function(A, B, trees) { ## interaction potential
     xA.b <- (trees[ , , 1, 2] == A) ## root branch on xA
     xA.b[!branch[[1]]] <- NA
     xA.c <- ## node 2 or 3 children branch on xA
-        (trees[ , , 2, 2] == A) | (trees[ , , 3, 2] == A) 
+        (trees[ , , 2, 2] == A) | (trees[ , , 3, 2] == A)
     xA.c[!(branch[[2]] | branch[[3]])] <- NA
     xB.b <- (trees[ , , 1, 2] == B) ## root branch on xB
     xB.b[!branch[[1]]] <- NA
@@ -114,7 +114,7 @@ IP <- function(A, B, trees) { ## interaction potential
         (trees[ , , 2, 2] == B) | (trees[ , , 3, 2] == B)
     xB.c[!(branch[[2]] | branch[[3]])] <- NA
     xAB <- (xA.b & xB.c) | (xA.c & xB.b)
-    return(list(AB = xAB, A.root = xA.b, B.root = xB.b, 
+    return(list(AB = xAB, A.root = xA.b, B.root = xB.b,
                 A.child = xA.c, B.child = xB.c,
                 branch = branch))
 }
@@ -125,7 +125,6 @@ IP <- function(A, B, trees) { ## interaction potential
 ## addmargins(table(x45$AB[(x45$A.root | x45$B.root) & (x45$branch[[2]] | x45$branch[[3]])]))
 
 inter <- matrix(nrow = 6, ncol = 6)
-
 for(i in 1:5)
     for(j in (i+1):6) {
         XX <- IP(i, j, trees)
