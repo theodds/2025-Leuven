@@ -37,5 +37,5 @@ install_github("remcc/mBART_shlib/mBART")
 install_github("rsparapa/bnptools/BART3")
 install_github("theodds/Batman")
 install_github("theodds/BART4RS")
-install_github("spencerwoody/possum") ## not needed
+install_github("spencerwoody/possum")
 
